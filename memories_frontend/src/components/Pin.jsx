@@ -41,15 +41,19 @@ const Pin = ({ pin: { postedBy, image, _id, destination, save } }) => {
         });
     }
   };
-
+  const deletePin = (id) => {
+    client.delete(id).then(() => {
+      window.location.reload();
+    });
+  };
   return (
     <div className="m-2">
       <div
         className=""
         onMouseEnter={() => setPostHovered(true)}
-        onMouseLeave={() => setPostHovered(true)}
+        onMouseLeave={() => setPostHovered(false)}
         onClick={() => navigate(`/pin-detail/${_id}`)}
-        className="relative cursor-zoom-in w-auto hover:shadow-lg rounded-lg overflow-hidden transition-all duration-500 ease-in-out"
+        className=" relative cursor-zoom-in w-auto hover:shadow-lg rounded-lg overflow-hidden transition-all duration-500 ease-in-out"
       >
         <img
           className="rounded-lg w-full"
@@ -90,13 +94,53 @@ const Pin = ({ pin: { postedBy, image, _id, destination, save } }) => {
                   }}
                   className="bg-red-500 opacity-70 hover:opacity-100 text-white font-bold px-5 py-1 text-base rounded-3xl hover:shadow-md outline-none"
                 >
-                  Save
+                  {savingPost ? "Saving" : "Save"}
+                </button>
+              )}
+            </div>
+            <div className=" flex justify-between items-center gap-2 w-full">
+              {destination && (
+                <a
+                  href={destination}
+                  target="_blank"
+                  className="bg-white flex items-center gap-2 text-black font-bold p-2 pl-4 pr-4 rounded-full opacity-70 hover:opacity-100 hover:shadow-md"
+                  rel="noreferrer"
+                >
+                  {" "}
+                  <BsFillArrowUpRightCircleFill />
+                  {destination.length > 20
+                    ? destination.slice(8, 20)
+                    : destination.slice(8)}
+                  ...
+                </a>
+              )}
+              {postedBy?._id === user.googleId && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deletePin(_id);
+                  }}
+                  className="bg-white p-2 opacity-70 hover:opacity-100  font-bold text-dark text-base rounded-3xl hover:shadow-md outline-none"
+                >
+                  <AiTwotoneDelete />
                 </button>
               )}
             </div>
           </div>
         )}
       </div>
+      <Link
+        to={`/user-profile/${postedBy?._id}`}
+        className="flex gap-2 mt-2 items-center"
+      >
+        <img
+          className="w-8 h-8 rounded-full object-cover"
+          src={postedBy?.image}
+          alt="user-profile"
+        />
+        <p className="font-semibold capitalize">{postedBy?.userName}</p>
+      </Link>
     </div>
   );
 };
